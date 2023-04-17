@@ -16,6 +16,8 @@ bot.
 """
 
 import logging
+from dotenv import load_dotenv
+import os
 import common_helper_functions as chf
 
 from telegram import __version__ as TG_VER
@@ -148,8 +150,10 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 def main() -> None:
     """Run the bot."""
+    load_dotenv()
+    telegram_token = os.environ["TELEGRAM_TOKEN"]
     # Create the Application and pass it your bot's token.
-    application = Application.builder().token("5851255494:AAGaOuM2Z_RxAXpMGaPEu590ZSLKt14ZNhk").build()
+    application = Application.builder().token(telegram_token).build()
 
     # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
     conv_handler = ConversationHandler(
