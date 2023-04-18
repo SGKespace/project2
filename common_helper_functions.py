@@ -33,3 +33,41 @@ text_Contacts = "Имя владельца Николай Николаевич �
                 "ICQ: xxxxxxxxx \n " \
                 "Tel: xxxxxxxxx \n " \
                 "Адрес: Булькуновка, старый элеватор"
+
+
+user_db = './stock.db'
+sql_create_ssf_table = """ CREATE TABLE IF NOT EXISTS projects (
+                                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                            dtc_b integer, 
+                                            entry_p text,
+                                            cond text,
+                                            pair text,            
+                                            cp integer,           
+                                            tp1 integer,          
+                                            Pr1 integer,          
+                                            tp2 integer,          
+                                            Pr2 integer,          
+                                            tp3 integer,          
+                                            Pr3 integer,          
+                                            SL integer,           
+                                            sum_inv_fun integer,  
+                                            shoulder integer,     
+                                            dtc_e integer,        
+                                            Dtc_e1 integer,       
+                                            Sum_p1 integer,       
+                                            Dtc_e2 integer,       
+                                            Sum_p2 integer,       
+                                            Dtc_e3 integer,       
+                                            Sum_p3 integer,       
+                                            Dtc_es integer,       
+                                            Sum_sl integer,       
+                                            sum_b integer,        
+                                            sum_e integer,        
+                                            delta integer,
+                                            ord_1 integer,
+                                            ord_2 integer,
+                                            ord_3 integer,
+                                            ord_4 integer,
+                                            ord_5 integer,
+                                            status integer         
+                                            ); """
