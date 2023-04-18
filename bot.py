@@ -64,7 +64,7 @@ def facts_to_str(user_data: Dict[str, str]) -> str:
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Start the conversation and ask user for input."""
-    await update.message.reply_text(chf.text_help, parse_mode="html", reply_markup=markup,)
+    await update.message.reply_text(chf.text_start, parse_mode="html", reply_markup=markup,)
 
     return CHOOSING
 
@@ -73,16 +73,16 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     """Ask the user for info about the selected predefined choice."""
     text = update.message.text
     context.user_data["choice"] = text
-    await update.message.reply_text(f"Your {text.lower()}? Yes, I would love to hear about that!")
+    if text == 'Help':
+        await update.message.reply_text(chf.text_help, parse_mode="html")
+        # await update.message.reply_text(f"Your {text.lower()}? Yes, I would love to hear about that!")
 
     return TYPING_REPLY
 
 
 async def custom_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Ask the user for a description of a custom category."""
-    await update.message.reply_text(
-        'Alright, please send me the category first, for example "Most impressive skill"'
-    )
+    await update.message.reply_text(chf.text_Contacts)
 
     return TYPING_CHOICE
 
