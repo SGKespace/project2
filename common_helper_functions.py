@@ -71,3 +71,17 @@ sql_create_ssf_table = """ CREATE TABLE IF NOT EXISTS projects (
                                             ord_5 integer,
                                             status integer         
                                             ); """
+
+sql_create_ssf_table = """ CREATE TABLE IF NOT EXISTS projects (
+                                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                            client_name text,
+                                            client_address text,
+                                            client_phone text,
+                                            storage text,
+                                            start_date date,
+                                            end_date date,
+                                            space float,          
+                                            weight float,          
+                                            items text,          
+                                            price float,          
+                                            ); """
