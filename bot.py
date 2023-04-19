@@ -18,10 +18,12 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"{TG_VER} version of this example, "
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
     Application,
     CommandHandler,
+    CallbackQueryHandler,
     ContextTypes,
     ConversationHandler,
     MessageHandler,
@@ -34,6 +36,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+START_ROUTES, END_ROUTES = range(2)
+OK_PD, NOT_PD = range(2)
 CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
 
 reply_keyboard = [
@@ -41,7 +45,7 @@ reply_keyboard = [
     ["MyOrders", "Contacts"],
     ["Done"],
 ]
-markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=None,
+markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True,
                              resize_keyboard=True, input_field_placeholder="Выберите категорию")
 
 
@@ -85,13 +89,56 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if text == 'Help':
         await update.message.reply_text(chf.text_help, parse_mode="html")
         # await update.message.reply_text(f"Your {text.lower()}? Yes, I would love to hear about that!")
+        return TYPING_REPLY
     if text == 'CreateOrder':
-        user_id = update.message.from_user.id
-        conn = await create_connection()
-        print(user_id)
+        keyboard = [
+            [
+                InlineKeyboardButton("Да", callback_data=str(OK_PD)),
+                InlineKeyboardButton("Нет", callback_data=str(NOT_PD)),
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        text = "Создавая заказ вы соглашаетесь на обработку персональных данных. \n <b>" \
+               "Я согласен на обработку персональных данных.</b>"
+        await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
+
+        return START_ROUTES
+
+        # query = update.callback_query
+        # await query.answer()
+        # user_id = update.message.from_user.id
+        # conn = await create_connection()
 
 
-    return TYPING_REPLY
+
+async def status_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    keyboard = [
+        [
+            InlineKeyboardButton("Да", callback_data=str(OK_PD)),
+            InlineKeyboardButton("Нет", callback_data=str(NOT_PD)),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    text = "Создавая заказ вы соглашаетесь на обработку персональных данных. \n <b>" \
+           "Я согласен на обработку персональных данных.</b>"
+    await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
+    return START_ROUTES
+
+
+async def ok_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = "Нчнем заполнять анкету\n <b>" \
+           "Введите полностью ваши фамилию Имя Отчество</b>"
+    await update.message.reply_text(text=text, parse_mode="html")
+
+    # return START_ROUTES
+
+
+async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = "Без вашего согласия мы не можем оказать услугу\n <b>" \
+           "Попробуйте переосмыслить свою ппозицию</b>"
+    await update.message.reply_text(text=text, parse_mode="html")
+
+    # return START_ROUTES
 
 
 async def custom_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -150,6 +197,14 @@ def main() -> None:
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
+            START_ROUTES: [
+                CallbackQueryHandler(ok_pd, pattern="^" + str(OK_PD) + "$"),
+                CallbackQueryHandler(not_pd, pattern="^" + str(NOT_PD) + "$"),
+            ],
+            END_ROUTES: [
+                CallbackQueryHandler(ok_pd, pattern="^" + str(OK_PD) + "$"),
+                CallbackQueryHandler(not_pd, pattern="^" + str(NOT_PD) + "$"),
+            ],
             CHOOSING: [MessageHandler(filters.Regex("^(Help|CreateOrder|MyOrders)$"), regular_choice),
                  MessageHandler(filters.Regex("^Contacts$"), custom_choice), ],
             TYPING_CHOICE: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), regular_choice)],
