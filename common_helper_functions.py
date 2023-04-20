@@ -39,6 +39,7 @@ user_db = './stock.db'
 
 sql_create_ssf_table = """ CREATE TABLE IF NOT EXISTS projects (
                                             id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                            chat_id text,
                                             client_name text,                    
                                             client_address text,                 
                                             client_phone text,                   
@@ -49,8 +50,7 @@ sql_create_ssf_table = """ CREATE TABLE IF NOT EXISTS projects (
                                             weight float,                        
                                             items text,                          
                                             price float,
-                                            delivery_by_courier bool,
-                                            ); """
+                                            delivery_by_courier bool); """
 
                                             # id INTEGER PRIMARY KEY AUTOINCREMENT,   он же номер бокса (также его можно использовать для формирования QR кода)
                                             # client_name text,                       ФИО клиента
