@@ -2,7 +2,9 @@ import logging
 from dotenv import load_dotenv
 
 import aiosqlite
+
 from datetime import date, datetime, timedelta
+import calendar
 
 import os
 import common_helper_functions as chf
@@ -37,7 +39,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES,FIO, ADRESS, CHARACTERISTICS, COMMENT = range(11)
+OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES, FIO, ADRESS, CHARACTERISTICS, \
+COMMENT, END_DATE, OK_D, NOT_D, DELIVERY = range(15)
 
 reply_keyboard = [
     ["Help", "CreateOrder"],
@@ -48,14 +51,20 @@ markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True,
                              resize_keyboard=True, input_field_placeholder="Выберите категорию")
 
 
-async def create_connection():
+async def add_months(sourcedate, months):
+    month = sourcedate.month - 1 + months
+    year = sourcedate.year + month // 12
+    month = month % 12 + 1
+    day = min(sourcedate.day, calendar.monthrange(year, month)[1])
 
+    return date(year, month, day)
+
+
+async def create_connection():
     db = await aiosqlite.connect(chf.user_db)
     cursor = await db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='projects';")
-
     if not await cursor.fetchone():
         await cursor.execute(chf.sql_create_ssf_table)
-
     return cursor, db
 
 
@@ -167,8 +176,15 @@ async def adress(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def characteristics(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global space_float, weight_float
     text_characteristics = update.message.text
-    space_float = int(text_characteristics.partition('/')[0].replace(' ', ''))             #   объем хранимых вещей
-    weight_float = int(text_characteristics.partition('/')[2].replace(' ', ''))            #  вес хранимых вещей
+    try:
+        space_float = int(text_characteristics.partition('/')[0].replace(' ', ''))             #   объем хранимых вещей
+    except:
+        space_float = 0
+    try:
+        weight_float = int(text_characteristics.partition('/')[2].replace(' ', ''))            #  вес хранимых вещей
+    except:
+        weight_float = 0
+
     query = update.message
     text = " <b>  Введите комментарий - обычно список вещей, ключевое слово чтобы понять что сдали и т.д.</b>"
     await query.reply_text(text=text, parse_mode="html")
@@ -179,12 +195,38 @@ async def characteristics(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 async def comment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global text_comment
     text_comment = update.message.text
-
     query = update.message
-    text = " <b>  Введите НЕ ПОМНЮ УЖЕ ЧТО НАДО.</b>"
+    text = " <b>  Введите количество месяцев хранения.</b>"
     await query.reply_text(text=text, parse_mode="html")
+    return END_DATE
 
-    return COMMENT
+
+async def enddate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global FINAL_DATE, begin_date
+    count_month = int(update.message.text.replace(' ', ''))
+
+    FINAL_DATE = await add_months(begin_date, count_month)
+
+    keyboard = [
+        [
+            InlineKeyboardButton("Да", callback_data=str(OK_PD)),
+            InlineKeyboardButton("Нет", callback_data=str(NOT_PD)),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    text = " <b> Я привезу свои вещи сам.</b>"
+    await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
+    return DELIVERY
+
+
+async def ok_d(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global delivery_by_courier
+    delivery_by_courier = 0
+
+
+async def not_d(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global delivery_by_courier
+    delivery_by_courier = 1
 
 
 async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -255,6 +297,10 @@ def main() -> None:
                 CallbackQueryHandler(ok_pd, pattern="^" + str(OK_PD) + "$"),
                 CallbackQueryHandler(not_pd, pattern="^" + str(NOT_PD) + "$"),
             ],
+            DELIVERY:  [
+                CallbackQueryHandler(ok_d, pattern="^" + str(OK_D) + "$"),
+                CallbackQueryHandler(not_d, pattern="^" + str(NOT_D) + "$"),
+            ],
             END_ROUTES: [
                 CallbackQueryHandler(ok_pd, pattern="^" + str(OK_PD) + "$"),
                 CallbackQueryHandler(not_pd, pattern="^" + str(NOT_PD) + "$"),
@@ -266,7 +312,8 @@ def main() -> None:
             FIO: [MessageHandler(filters.TEXT, fio)],
             ADRESS: [MessageHandler(filters.TEXT, adress)],
             CHARACTERISTICS: [MessageHandler(filters.TEXT, characteristics)],
-            COMMENT: [MessageHandler(filters.TEXT, comment)]
+            COMMENT: [MessageHandler(filters.TEXT, comment)],
+            END_DATE: [MessageHandler(filters.TEXT, enddate)]
         },
         fallbacks=[MessageHandler(filters.Regex("^Done$"), done)],
     )

@@ -50,7 +50,7 @@ sql_create_ssf_table = """ CREATE TABLE IF NOT EXISTS projects (
                                             weight float,                        
                                             items text,                          
                                             price float,
-                                            delivery_by_courier bool); """
+                                            delivery_by_courier INTEGER); """
 
                                             # id INTEGER PRIMARY KEY AUTOINCREMENT,   он же номер бокса (также его можно использовать для формирования QR кода)
                                             # client_name text,                       ФИО клиента
