@@ -103,12 +103,6 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
         return START_ROUTES
 
-        # query = update.callback_query
-        # await query.answer()
-        # user_id = update.message.from_user.id
-        # conn = await create_connection()
-
-
 
 async def status_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     keyboard = [
@@ -130,12 +124,18 @@ async def ok_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     text = "Начнем заполнять анкету\n <b>" \
            "Введите полностью ваши фамилию Имя Отчество</b>"
     await query.edit_message_text(text=text, parse_mode="html")
-    # await update.message.reply_text(text=text, parse_mode="html")
+
     return FIO
 
 
 async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    print(update.callback_query)
+    text_fio = update.message.text
+    chat_id = update.message.chat.id
+    begin_date = update.message.date
+
+    conn = await create_connection()
+
+    await close_connection(conn)
 
 
 
