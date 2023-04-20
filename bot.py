@@ -63,6 +63,11 @@ async def close_connection(conn):
     await conn[0].close()
     await conn[1].close()
 
+async def add_event(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13):  # Вставляем данные в таблицу
+    event_ = (None, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13)
+    async with aiosqlite.connect(cfg.way_db) as db:
+        await db.execute('INSERT INTO projects VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', event_)
+        await db.commit()
 
 
 def facts_to_str(user_data: Dict[str, str]) -> str:
@@ -134,7 +139,7 @@ async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     begin_date = update.message.date
 
     conn = await create_connection()
-
+    await add_event(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13)
     await close_connection(conn)
 
 
