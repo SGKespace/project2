@@ -49,7 +49,7 @@ markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True,
 
 
 async def create_connection():
-    # os.remove(cfg.user_db)
+
     db = await aiosqlite.connect(chf.user_db)
     cursor = await db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='projects';")
 
@@ -65,7 +65,7 @@ async def close_connection(conn):
 
 async def add_event(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13):  # Вставляем данные в таблицу
     event_ = (None, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13)
-    async with aiosqlite.connect(cfg.way_db) as db:
+    async with aiosqlite.connect(chf.user_db) as db:
         await db.execute('INSERT INTO projects VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', event_)
         await db.commit()
 
@@ -139,9 +139,8 @@ async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     begin_date = update.message.date
 
     conn = await create_connection()
-    await add_event(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13)
+    await add_event(chat_id, text_fio, '', '', '', begin_date, '', '', '', '', '', '', True)
     await close_connection(conn)
-
 
 
 async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
