@@ -37,7 +37,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES, FIO, ADRESS = range(9)
+OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES,FIO, ADRESS, CHARACTERISTICS, COMMENT = range(11)
 
 reply_keyboard = [
     ["Help", "CreateOrder"],
@@ -135,6 +135,7 @@ async def ok_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global text_fio, chat_id, begin_date
     text_fio = update.message.text
     chat_id = update.message.chat.id
     begin_date = update.message.date
@@ -144,28 +145,46 @@ async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await close_connection(conn)
 
     query = update.message
-    # await query.answer()  # Тут испправить
-    text = " <b> Введите Ваш адрес</b>"
-    await query.edit_message_text(text=text, parse_mode="html")
+
+    text = " <b> Введите Ваш адрес и телефон для связис</b> "
+    await query.reply_text(text=text, parse_mode="html")
 
     return ADRESS
 
 
 async def adress(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    text_fio = update.message.text
-    chat_id = update.message.chat.id
-    begin_date = update.message.date
+    global text_adress
+    text_adress = update.message.text
 
-    conn = await create_connection()
-    await add_event('', chat_id, text_fio, '', '', '', begin_date, '', '', '', '', '', True)
-    await close_connection(conn)
-    query = update.callback_query
-    await query.answer()
-    text = " <b> Телефон</b>"
-    await query.edit_message_text(text=text, parse_mode="html")
+    query = update.message
 
-    # return ADRESS
+    text = "  Введите примерные данные  в формате <b>объем / вес</b>.  Данные передать в метрах кубических и килограммах. " \
+           "Если не можете рассчитать введите: <b> 0 / 0 </b> мы сами все измерим и скажем цену при сдаче вещей"
+    await query.reply_text(text=text, parse_mode="html")
+    return CHARACTERISTICS
 
+
+async def characteristics(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global space_float, weight_float
+    text_characteristics = update.message.text
+    space_float = int(text_characteristics.partition('/')[0].replace(' ', ''))             #   объем хранимых вещей
+    weight_float = int(text_characteristics.partition('/')[2].replace(' ', ''))            #  вес хранимых вещей
+    query = update.message
+    text = " <b>  Введите комментарий - обычно список вещей, ключевое слово чтобы понять что сдали и т.д.</b>"
+    await query.reply_text(text=text, parse_mode="html")
+
+    return COMMENT
+
+
+async def comment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global text_comment
+    text_comment = update.message.text
+
+    query = update.message
+    text = " <b>  Введите НЕ ПОМНЮ УЖЕ ЧТО НАДО.</b>"
+    await query.reply_text(text=text, parse_mode="html")
+
+    return COMMENT
 
 
 async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -245,7 +264,9 @@ def main() -> None:
             TYPING_CHOICE: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), regular_choice)],
             TYPING_REPLY: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), received_information,)],
             FIO: [MessageHandler(filters.TEXT, fio)],
-            ADRESS: [MessageHandler(filters.TEXT, adress)]
+            ADRESS: [MessageHandler(filters.TEXT, adress)],
+            CHARACTERISTICS: [MessageHandler(filters.TEXT, characteristics)],
+            COMMENT: [MessageHandler(filters.TEXT, comment)]
         },
         fallbacks=[MessageHandler(filters.Regex("^Done$"), done)],
     )
