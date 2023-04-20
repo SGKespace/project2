@@ -36,9 +36,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-START_ROUTES, END_ROUTES = range(2)
-# OK_PD, NOT_PD = range(2)
-OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(5)
+
+OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES, FIO = range(8)
 
 reply_keyboard = [
     ["Help", "CreateOrder"],
@@ -126,11 +125,18 @@ async def status_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def ok_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    text = "Нчнем заполнять анкету\n <b>" \
+    query = update.callback_query
+    await query.answer()
+    text = "Начнем заполнять анкету\n <b>" \
            "Введите полностью ваши фамилию Имя Отчество</b>"
-    await update.message.reply_text(text=text, parse_mode="html")
+    await query.edit_message_text(text=text, parse_mode="html")
+    # await update.message.reply_text(text=text, parse_mode="html")
+    return FIO
 
-    return START_ROUTES
+
+async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    print(update.callback_query)
+
 
 
 async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -209,6 +215,7 @@ def main() -> None:
                  MessageHandler(filters.Regex("^Contacts$"), custom_choice), ],
             TYPING_CHOICE: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), regular_choice)],
             TYPING_REPLY: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), received_information,)],
+            FIO: [MessageHandler(filters.TEXT, fio)]
         },
         fallbacks=[MessageHandler(filters.Regex("^Done$"), done)],
     )
