@@ -37,7 +37,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES, FIO = range(8)
+OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES, FIO, ADRESS = range(9)
 
 reply_keyboard = [
     ["Help", "CreateOrder"],
@@ -62,6 +62,7 @@ async def create_connection():
 async def close_connection(conn):
     await conn[0].close()
     await conn[1].close()
+
 
 async def add_event(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13):  # Вставляем данные в таблицу
     event_ = (None, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13)
@@ -142,6 +143,30 @@ async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await add_event('', chat_id, text_fio, '', '', '', begin_date, '', '', '', '', '', True)
     await close_connection(conn)
 
+    query = update.message
+    # await query.answer()  # Тут испправить
+    text = " <b> Введите Ваш адрес</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+
+    return ADRESS
+
+
+async def adress(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text_fio = update.message.text
+    chat_id = update.message.chat.id
+    begin_date = update.message.date
+
+    conn = await create_connection()
+    await add_event('', chat_id, text_fio, '', '', '', begin_date, '', '', '', '', '', True)
+    await close_connection(conn)
+    query = update.callback_query
+    await query.answer()
+    text = " <b> Телефон</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+
+    # return ADRESS
+
+
 
 async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     text = "Без вашего согласия мы не можем оказать услугу\n <b>" \
@@ -219,7 +244,8 @@ def main() -> None:
                  MessageHandler(filters.Regex("^Contacts$"), custom_choice), ],
             TYPING_CHOICE: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), regular_choice)],
             TYPING_REPLY: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), received_information,)],
-            FIO: [MessageHandler(filters.TEXT, fio)]
+            FIO: [MessageHandler(filters.TEXT, fio)],
+            ADRESS: [MessageHandler(filters.TEXT, adress)]
         },
         fallbacks=[MessageHandler(filters.Regex("^Done$"), done)],
     )
