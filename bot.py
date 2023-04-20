@@ -37,8 +37,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 START_ROUTES, END_ROUTES = range(2)
-OK_PD, NOT_PD = range(2)
-CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
+# OK_PD, NOT_PD = range(2)
+OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(5)
 
 reply_keyboard = [
     ["Help", "CreateOrder"],
@@ -130,7 +130,7 @@ async def ok_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
            "Введите полностью ваши фамилию Имя Отчество</b>"
     await update.message.reply_text(text=text, parse_mode="html")
 
-    # return START_ROUTES
+    return START_ROUTES
 
 
 async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
