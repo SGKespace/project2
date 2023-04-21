@@ -42,6 +42,8 @@ logger = logging.getLogger(__name__)
 OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES, FIO, ADRESS, CHARACTERISTICS, \
 COMMENT, END_DATE, OK_DE, NOT_DE, DELIVERY = range(15)
 
+ORD1, ORD2, ORD3, ORD14, ORD5, ORD6, ORD7, ORD8, ORD9, ORD10 = range(10)
+
 DELIVERY_BY_COURIER = 0
 FINAL_DATE = (1, 1, 1)
 BEGIN_DATE = date(1, 1, 1)
@@ -106,6 +108,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global CHAT_ID, ORD1, ORD2, ORD3, ORD14, ORD5, ORD6, ORD7, ORD8, ORD9, ORD10
     """Ask the user for info about the selected predefined choice."""
     """Запросите у пользователя информацию о выбранном предопределенном выборе."""
     text = update.message.text
@@ -125,8 +128,39 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         text = "Создавая заказ вы соглашаетесь на обработку персональных данных. \n <b>" \
                "Я согласен на обработку персональных данных.</b>"
         await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
-
         return START_ROUTES
+
+    if text == 'MyOrders':
+
+        CHAT_ID = update.message.chat.id
+
+
+        conn = await create_connection()
+        await conn[0].execute('SELECT * FROM projects WHERE chat_id = CHAT_ID')
+        list_ord = await conn[0].fetchall()  # возвращается кортеж
+
+        # await add_event('', CHAT_ID, TEXT_FIO, TEXT_ADRESS, '', '', BEGIN_DATE, FINAL_DATE, SPACE_FLOAT, WEIGHT_FLOAT,TEXT_COMMENT, price_float, DELIVERY_BY_COURIER)
+
+        await close_connection(conn)
+        keyboard =[]
+        keyboard_g = []
+        n = 1
+        for order in list_ord:
+
+            btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(f'ORD{n}'))
+            n = n + 1
+            keyboard.append(btn)
+        keyboard_g.append(keyboard)
+
+
+        reply_markup = InlineKeyboardMarkup(keyboard_g)
+        text = "Выбор QR код"
+        await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
+
+
+
+
+
 
 
 async def status_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -221,7 +255,7 @@ async def enddate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     reply_markup = InlineKeyboardMarkup(keyboard)
     text = " <b> Я привезу свои вещи сам.</b>"
     await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
-    query = update.callback_query
+    # query = update.callback_query
     # await query.answer()
 
     return DELIVERY
@@ -231,7 +265,8 @@ async def ok_delivery(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     global DELIVERY_BY_COURIER, FINAL_DATE, BEGIN_DATE, TEXT_COMMENT, SPACE_FLOAT, WEIGHT_FLOAT, TEXT_ADRESS, \
         TEXT_FIO, CHAT_ID, COUNT_MONTH
     DELIVERY_BY_COURIER = 0
-    price_float = SPACE_FLOAT * COUNT_MONTH
+    price_float = SPACE_FLOAT * COUNT_MONTH * 2000
+
     conn = await create_connection()
     await add_event('', CHAT_ID, TEXT_FIO, TEXT_ADRESS, '', '', BEGIN_DATE, FINAL_DATE, SPACE_FLOAT, WEIGHT_FLOAT,
                     TEXT_COMMENT, price_float, DELIVERY_BY_COURIER)
@@ -243,7 +278,7 @@ async def not_delivery(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     global DELIVERY_BY_COURIER, FINAL_DATE, BEGIN_DATE, TEXT_COMMENT, SPACE_FLOAT, WEIGHT_FLOAT, TEXT_ADRESS, \
         TEXT_FIO, CHAT_ID, COUNT_MONTH
     DELIVERY_BY_COURIER = 1
-    price_float = SPACE_FLOAT * COUNT_MONTH
+    price_float = SPACE_FLOAT * COUNT_MONTH * 2000
     conn = await create_connection()
     await add_event('', CHAT_ID, TEXT_FIO, TEXT_ADRESS, '', '', BEGIN_DATE, FINAL_DATE, SPACE_FLOAT, WEIGHT_FLOAT,
                     TEXT_COMMENT, price_float, DELIVERY_BY_COURIER)
