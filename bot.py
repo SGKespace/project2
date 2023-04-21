@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES, FIO, ADRESS, CHARACTERISTICS, \
-COMMENT, END_DATE, OK_D, NOT_D, DELIVERY = range(15)
+COMMENT, END_DATE, OK_DE, NOT_DE, DELIVERY = range(15)
 
 DELIVERY_BY_COURIER = 0
 FINAL_DATE = (1, 1, 1)
@@ -214,8 +214,8 @@ async def enddate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     keyboard = [
         [
-            InlineKeyboardButton("Да", callback_data=str(OK_PD)),
-            InlineKeyboardButton("Нет", callback_data=str(NOT_PD)),
+            InlineKeyboardButton("Да", callback_data=str(OK_DE)),
+            InlineKeyboardButton("Нет", callback_data=str(NOT_DE)),
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -227,7 +227,7 @@ async def enddate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return DELIVERY
 
 
-async def ok_d(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def ok_delivery(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global DELIVERY_BY_COURIER, FINAL_DATE, BEGIN_DATE, TEXT_COMMENT, SPACE_FLOAT, WEIGHT_FLOAT, TEXT_ADRESS, \
         TEXT_FIO, CHAT_ID, COUNT_MONTH
     DELIVERY_BY_COURIER = 0
@@ -239,7 +239,7 @@ async def ok_d(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return CHOOSING
 
 
-async def not_d(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def not_delivery(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global DELIVERY_BY_COURIER, FINAL_DATE, BEGIN_DATE, TEXT_COMMENT, SPACE_FLOAT, WEIGHT_FLOAT, TEXT_ADRESS, \
         TEXT_FIO, CHAT_ID, COUNT_MONTH
     DELIVERY_BY_COURIER = 1
@@ -320,9 +320,9 @@ def main() -> None:
                 CallbackQueryHandler(ok_pd, pattern="^" + str(OK_PD) + "$"),
                 CallbackQueryHandler(not_pd, pattern="^" + str(NOT_PD) + "$")
             ],
-            END_ROUTES: [
-                CallbackQueryHandler(ok_pd, pattern="^" + str(OK_PD) + "$"),
-                CallbackQueryHandler(not_pd, pattern="^" + str(NOT_PD) + "$"),
+            DELIVERY: [
+                CallbackQueryHandler(ok_delivery, pattern="^" + str(OK_DE) + "$"),
+                CallbackQueryHandler(not_delivery, pattern="^" + str(NOT_DE) + "$"),
             ],
             CHOOSING: [MessageHandler(filters.Regex("^(Help|CreateOrder|MyOrders)$"), regular_choice),
                  MessageHandler(filters.Regex("^Contacts$"), custom_choice), ],
@@ -332,11 +332,7 @@ def main() -> None:
             ADRESS: [MessageHandler(filters.TEXT, adress)],
             CHARACTERISTICS: [MessageHandler(filters.TEXT, characteristics)],
             COMMENT: [MessageHandler(filters.TEXT, comment)],
-            END_DATE: [MessageHandler(filters.TEXT, enddate)],
-            DELIVERY: [
-                CallbackQueryHandler(ok_d, pattern="^" + str(OK_D) + "$"),
-                CallbackQueryHandler(not_d, pattern="^" + str(NOT_D) + "$"),
-            ],
+            END_DATE: [MessageHandler(filters.TEXT, enddate)]
         },
         fallbacks=[MessageHandler(filters.Regex("^Done$"), done)],
     )
