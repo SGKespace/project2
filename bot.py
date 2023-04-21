@@ -141,9 +141,9 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if text == 'MyOrders':
 
         CHAT_ID = update.message.chat.id
-
+        ch_id = (str(CHAT_ID), )
         conn = await create_connection()
-        await conn[0].execute('SELECT * FROM projects WHERE chat_id = CHAT_ID')
+        await conn[0].execute('SELECT * FROM projects WHERE chat_id=?', ch_id)
         list_ord = await conn[0].fetchall()  # возвращается кортеж
         await close_connection(conn)
 
