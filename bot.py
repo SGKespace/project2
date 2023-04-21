@@ -42,6 +42,17 @@ logger = logging.getLogger(__name__)
 OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES, FIO, ADRESS, CHARACTERISTICS, \
 COMMENT, END_DATE, OK_D, NOT_D, DELIVERY = range(15)
 
+DELIVERY_BY_COURIER = 0
+FINAL_DATE = (1, 1, 1)
+BEGIN_DATE = date(1, 1, 1)
+TEXT_COMMENT = ' '
+SPACE_FLOAT = 0
+WEIGHT_FLOAT = 0
+TEXT_ADRESS = ' '
+TEXT_FIO = ' '
+CHAT_ID = ' '
+COUNT_MONTH = 1
+
 reply_keyboard = [
     ["Help", "CreateOrder"],
     ["MyOrders", "Contacts"],
@@ -97,7 +108,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Ask the user for info about the selected predefined choice."""
     """Запросите у пользователя информацию о выбранном предопределенном выборе."""
-
     text = update.message.text
     context.user_data["choice"] = text
     if text == 'Help':
@@ -144,14 +154,10 @@ async def ok_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global text_fio, chat_id, begin_date
-    text_fio = update.message.text
-    chat_id = update.message.chat.id
-    begin_date = update.message.date
-
-    conn = await create_connection()
-    await add_event('', chat_id, text_fio, '', '', '', begin_date, '', '', '', '', '', True)
-    await close_connection(conn)
+    global TEXT_FIO, CHAT_ID, BEGIN_DATE
+    TEXT_FIO = update.message.text
+    CHAT_ID = update.message.chat.id
+    BEGIN_DATE = update.message.date
 
     query = update.message
 
@@ -162,8 +168,8 @@ async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def adress(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global text_adress
-    text_adress = update.message.text
+    global TEXT_ADRESS
+    TEXT_ADRESS = update.message.text
 
     query = update.message
 
@@ -174,27 +180,27 @@ async def adress(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def characteristics(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global space_float, weight_float
+    global SPACE_FLOAT, WEIGHT_FLOAT
     text_characteristics = update.message.text
     try:
-        space_float = int(text_characteristics.partition('/')[0].replace(' ', ''))             #   объем хранимых вещей
+        SPACE_FLOAT = int(text_characteristics.partition('/')[0].replace(' ', ''))             #   объем хранимых вещей
     except:
-        space_float = 0
+        SPACE_FLOAT = 0
     try:
-        weight_float = int(text_characteristics.partition('/')[2].replace(' ', ''))            #  вес хранимых вещей
+        WEIGHT_FLOAT = int(text_characteristics.partition('/')[2].replace(' ', ''))            #  вес хранимых вещей
     except:
-        weight_float = 0
+        WEIGHT_FLOAT = 0
 
     query = update.message
-    text = " <b>  Введите комментарий - обычно список вещей, ключевое слово чтобы понять что сдали и т.д.</b>"
+    text = " <b>  Введите комментарий - обычно список вещей, ключевое слово - чтобы понять что сдали и т.д.</b>"
     await query.reply_text(text=text, parse_mode="html")
 
     return COMMENT
 
 
 async def comment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global text_comment
-    text_comment = update.message.text
+    global TEXT_COMMENT
+    TEXT_COMMENT = update.message.text
     query = update.message
     text = " <b>  Введите количество месяцев хранения.</b>"
     await query.reply_text(text=text, parse_mode="html")
@@ -202,10 +208,9 @@ async def comment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def enddate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global FINAL_DATE, begin_date
-    count_month = int(update.message.text.replace(' ', ''))
-
-    FINAL_DATE = await add_months(begin_date, count_month)
+    global FINAL_DATE, BEGIN_DATE
+    COUNT_MONTH = int(update.message.text.replace(' ', ''))
+    FINAL_DATE = await add_months(BEGIN_DATE, COUNT_MONTH)
 
     keyboard = [
         [
@@ -216,17 +221,35 @@ async def enddate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     reply_markup = InlineKeyboardMarkup(keyboard)
     text = " <b> Я привезу свои вещи сам.</b>"
     await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
+    query = update.callback_query
+    # await query.answer()
+
     return DELIVERY
 
 
 async def ok_d(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global delivery_by_courier
-    delivery_by_courier = 0
+    global DELIVERY_BY_COURIER, FINAL_DATE, BEGIN_DATE, TEXT_COMMENT, SPACE_FLOAT, WEIGHT_FLOAT, TEXT_ADRESS, \
+        TEXT_FIO, CHAT_ID, COUNT_MONTH
+    DELIVERY_BY_COURIER = 0
+    price_float = SPACE_FLOAT * COUNT_MONTH
+    conn = await create_connection()
+    await add_event('', CHAT_ID, TEXT_FIO, TEXT_ADRESS, '', '', BEGIN_DATE, FINAL_DATE, SPACE_FLOAT, WEIGHT_FLOAT,
+                    TEXT_COMMENT, price_float, DELIVERY_BY_COURIER)
+    await close_connection(conn)
+    return CHOOSING
 
 
 async def not_d(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global delivery_by_courier
-    delivery_by_courier = 1
+    global DELIVERY_BY_COURIER, FINAL_DATE, BEGIN_DATE, TEXT_COMMENT, SPACE_FLOAT, WEIGHT_FLOAT, TEXT_ADRESS, \
+        TEXT_FIO, CHAT_ID, COUNT_MONTH
+    DELIVERY_BY_COURIER = 1
+    price_float = SPACE_FLOAT * COUNT_MONTH
+    conn = await create_connection()
+    await add_event('', CHAT_ID, TEXT_FIO, TEXT_ADRESS, '', '', BEGIN_DATE, FINAL_DATE, SPACE_FLOAT, WEIGHT_FLOAT,
+                    TEXT_COMMENT, price_float, DELIVERY_BY_COURIER)
+    await close_connection(conn)
+    return CHOOSING
+
 
 
 async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -234,7 +257,7 @@ async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
            "Попробуйте переосмыслить свою ппозицию</b>"
     await update.message.reply_text(text=text, parse_mode="html")
 
-    # return START_ROUTES
+    return CHOOSING
 
 
 async def custom_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -295,11 +318,7 @@ def main() -> None:
         states={
             START_ROUTES: [
                 CallbackQueryHandler(ok_pd, pattern="^" + str(OK_PD) + "$"),
-                CallbackQueryHandler(not_pd, pattern="^" + str(NOT_PD) + "$"),
-            ],
-            DELIVERY:  [
-                CallbackQueryHandler(ok_d, pattern="^" + str(OK_D) + "$"),
-                CallbackQueryHandler(not_d, pattern="^" + str(NOT_D) + "$"),
+                CallbackQueryHandler(not_pd, pattern="^" + str(NOT_PD) + "$")
             ],
             END_ROUTES: [
                 CallbackQueryHandler(ok_pd, pattern="^" + str(OK_PD) + "$"),
@@ -313,7 +332,11 @@ def main() -> None:
             ADRESS: [MessageHandler(filters.TEXT, adress)],
             CHARACTERISTICS: [MessageHandler(filters.TEXT, characteristics)],
             COMMENT: [MessageHandler(filters.TEXT, comment)],
-            END_DATE: [MessageHandler(filters.TEXT, enddate)]
+            END_DATE: [MessageHandler(filters.TEXT, enddate)],
+            DELIVERY: [
+                CallbackQueryHandler(ok_d, pattern="^" + str(OK_D) + "$"),
+                CallbackQueryHandler(not_d, pattern="^" + str(NOT_D) + "$"),
+            ],
         },
         fallbacks=[MessageHandler(filters.Regex("^Done$"), done)],
     )

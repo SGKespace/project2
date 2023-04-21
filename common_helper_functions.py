@@ -63,4 +63,9 @@ sql_create_ssf_table = """ CREATE TABLE IF NOT EXISTS projects (
                                             # weight float,                           вес хранимых вещей
                                             # items text,                             список вещей
                                             # price float,                            стоимость хранения (до конца срока хранения)
-                                            # delivery_by_courier bool,               доставка курьером (да/нет)
+                                            # delivery_by_courier INTEGER,            доставка курьером (да0/нет1/доставленр2)
+
+
+
+
+
