@@ -2,7 +2,7 @@ import logging
 from dotenv import load_dotenv
 
 import aiosqlite
-
+import qrcode
 from datetime import date, datetime, timedelta
 import calendar
 
@@ -55,6 +55,7 @@ TEXT_FIO = ' '
 CHAT_ID = ' '
 COUNT_MONTH = 1
 
+
 reply_keyboard = [
     ["Help", "CreateOrder"],
     ["MyOrders", "Contacts"],
@@ -92,8 +93,17 @@ async def add_event(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13):  # 
         await db.execute('INSERT INTO projects VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', event_)
         await db.commit()
 
+        
+async def creat_qr(text_qr, name_file):
+    qr = qrcode.QRCode( version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4,)
+    qr.add_data(text_qr)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    img.save(name_file)
 
-def facts_to_str(user_data: Dict[str, str]) -> str:
+        
+        
+ async def facts_to_str(user_data: Dict[str, str]) -> str:
     """Helper function for formatting the gathered user info."""
     """ Вспомогательная функция для форматирования собранной информации о пользователе """
 
@@ -146,6 +156,24 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         keyboard_g = []
         n = 1
         for order in list_ord:
+            if n = 1:
+                ORD1 = order[0]
+            if n = 2:
+                ORD2 = order[0] 
+            if n = 3:
+                ORD3 = order[0]
+            if n = 5:
+                ORD5 = order[0] 
+            if n = 6:
+                ORD6 = order[0]
+            if n = 7:
+                ORD7 = order[0] 
+            if n = 8:
+                ORD8 = order[0]
+            if n = 9:
+                ORD9 = order[0] 
+            if n = 10:
+                ORD10 = order[0]
 
             btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(f'ORD{n}'))
             n = n + 1
@@ -157,8 +185,15 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         text = "Выбор QR код"
         await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
 
+        return SEL_QR
 
-
+async def ord1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global ORD1
+    name_file =f'./{ORD1}.png'
+    creat_qr(ORD1, name_file)
+    
+    await update.message.photo(name_file)
+    return CHOOSING
 
 
 
@@ -367,7 +402,20 @@ def main() -> None:
             ADRESS: [MessageHandler(filters.TEXT, adress)],
             CHARACTERISTICS: [MessageHandler(filters.TEXT, characteristics)],
             COMMENT: [MessageHandler(filters.TEXT, comment)],
-            END_DATE: [MessageHandler(filters.TEXT, enddate)]
+            END_DATE: [MessageHandler(filters.TEXT, enddate)],
+            SEL_QR: [
+                CallbackQueryHandler(qr1, pattern="^" + str(ORD1) + "$"),
+                CallbackQueryHandler(qr2, pattern="^" + str(ORD2) + "$"),
+                CallbackQueryHandler(qr3, pattern="^" + str(ORD3) + "$"),
+                CallbackQueryHandler(qr4, pattern="^" + str(ORD4) + "$"),
+                CallbackQueryHandler(qr5, pattern="^" + str(ORD5) + "$"),
+                CallbackQueryHandler(qr6, pattern="^" + str(ORD6) + "$"),
+                CallbackQueryHandler(qr7, pattern="^" + str(ORD7) + "$"),
+                CallbackQueryHandler(qr8, pattern="^" + str(ORD8) + "$"),
+                CallbackQueryHandler(qr9, pattern="^" + str(ORD9) + "$"),
+                CallbackQueryHandler(qr10, pattern="^" + str(ORD10) + "$"),
+                
+            ],
         },
         fallbacks=[MessageHandler(filters.Regex("^Done$"), done)],
     )
