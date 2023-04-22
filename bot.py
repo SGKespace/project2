@@ -464,6 +464,16 @@ async def ok_delivery(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
         TEXT_FIO, CHAT_ID, COUNT_MONTH
     DELIVERY_BY_COURIER = 0
     price_float = SPACE_FLOAT * COUNT_MONTH * 2000
+    query = update.callback_query
+
+    text = 'Ваши данные обрабатываются: \n\n' \
+           f'ФИО: {TEXT_FIO} \n' \
+           f'Адрес: {TEXT_ADRESS} \n' \
+           f'Объем: {SPACE_FLOAT} м.кв. \n' \
+           f'Срок хранения {COUNT_MONTH} мес. \n'  \
+           f'Расчетная стоимость: {price_float} рублей \n\n' \
+           '<b> С Вами в ближайшее время свяжется наш сотрудник для уточнения деталей </b>'
+    await query.edit_message_text(text=text, parse_mode="html")
 
     conn = await create_connection()
     await add_event('', CHAT_ID, TEXT_FIO, TEXT_ADRESS, '', '', BEGIN_DATE, FINAL_DATE, SPACE_FLOAT, WEIGHT_FLOAT,
