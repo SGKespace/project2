@@ -123,7 +123,7 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     context.user_data["choice"] = text
     if text == 'Help':
         await update.message.reply_text(chf.text_help, parse_mode="html")
-        # await update.message.reply_text(f"Your {text.lower()}? Yes, I would love to hear about that!")
+
         return TYPING_REPLY
     if text == 'CreateOrder':
         keyboard = [
@@ -197,7 +197,11 @@ async def qr1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD1
     name_file = f'./{ORD1}.png'
     await creat_qr(ORD1, name_file)
-    # await update.message.photo(name_file)
+    user_data = context.user_data
+    del user_data["choice"]
+
+    await update.message.reply_text(chf.text_help, parse_mode="html")
+
     return CHOOSING
 
 
@@ -397,10 +401,11 @@ async def not_delivery(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
 
 async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    await query.answer()
     text = "Без вашего согласия мы не можем оказать услугу\n <b>" \
            "Попробуйте переосмыслить свою ппозицию</b>"
-    await update.message.reply_text(text=text, parse_mode="html")
-
+    await query.edit_message_text(text=text, parse_mode="html")
     return CHOOSING
 
 
