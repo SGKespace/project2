@@ -153,24 +153,35 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         for order in list_ord:
             if n == 1:
                 ORD1 = order[0]
+                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD1))
             if n == 2:
                 ORD2 = order[0]
+                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD2))
             if n == 3:
                 ORD3 = order[0]
+                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD3))
+            if n == 4:
+                ORD4 = order[0]
+                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD4))
             if n == 5:
                 ORD5 = order[0]
+                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD5))
             if n == 6:
                 ORD6 = order[0]
+                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD6))
             if n == 7:
                 ORD7 = order[0]
+                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD7))
             if n == 8:
                 ORD8 = order[0]
+                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD8))
             if n == 9:
                 ORD9 = order[0]
+                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD9))
             if n == 10:
                 ORD10 = order[0]
-            k = str(f'ORD{n}')
-            btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(f'ORD{n}'))
+                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD10))
+
             keyboard.append(btn)
             n = n + 1
 
