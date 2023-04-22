@@ -40,7 +40,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES, FIO, ADRESS, CHARACTERISTICS, \
-COMMENT, END_DATE, OK_DE, NOT_DE, DELIVERY, SEL_QR, LOAD1 = range(17)
+COMMENT, END_DATE, OK_DE, NOT_DE, DELIVERY, SEL_QR, LOAD1, LOAD2, LOAD3, LOAD4, LOAD5, LOAD6, LOAD7, LOAD8, LOAD9, \
+LOAD10 = range(26)
 
 ORD0, ORD1, ORD2, ORD3, ORD4, ORD5, ORD6, ORD7, ORD8, ORD9, ORD10 = range(11)
 
@@ -139,14 +140,12 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return START_ROUTES
 
     if text == 'MyOrders':
-
         CHAT_ID = update.message.chat.id
         ch_id = (str(CHAT_ID), )
         conn = await create_connection()
         await conn[0].execute('SELECT * FROM projects WHERE chat_id=?', ch_id)
         list_ord = await conn[0].fetchall()  # возвращается кортеж
         await close_connection(conn)
-
         keyboard = []
         keyboard_g = []
         n = 1
@@ -184,44 +183,44 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
             keyboard.append(btn)
             n = n + 1
-
         keyboard_g.append(keyboard)
-
         reply_markup = InlineKeyboardMarkup(keyboard_g)
-        text = "Выбор QR код"
+        text = "Выбор QR кодa для открытия ячейки"
         await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
         return SEL_QR
 
 
 async def qr1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD1, application
+    global ORD1
     name_file = f'./{ORD1}.png'
     await creat_qr(ORD1, name_file)
-    user_data = context.user_data
-    del user_data["choice"]
-
     query = update.callback_query
-
     text = " <b>подтвердите номер заказа</b>"
     await query.edit_message_text(text=text, parse_mode="html")
-
     return LOAD1
 
 
 async def qr11(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-
-     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        './1.png', 'rb'), filename='./1.png')
-
-     # await update.message.photo(photo=open('./1.png', 'rb'))
-     return CHOOSING
+    global ORD1
+    await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        f'{str(ORD1)}.png', 'rb'), filename=f'./{str(ORD1)}.png')
+    return CHOOSING
 
 
 async def qr2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD2
     name_file = f'./{ORD2}.png'
     await creat_qr(ORD2, name_file)
-    # await update.message.photo(name_file)
+    query = update.callback_query
+    text = " <b>подтвердите номер заказа</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+    return LOAD2
+
+
+async def qr21(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global ORD2
+    await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        f'{str(ORD2)}.png', 'rb'), filename=f'./{str(ORD2)}.png')
     return CHOOSING
 
 
@@ -229,7 +228,16 @@ async def qr3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD3
     name_file = f'./{ORD3}.png'
     await creat_qr(ORD3, name_file)
-    # await update.message.photo(name_file)
+    query = update.callback_query
+    text = " <b>подтвердите номер заказа</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+    return LOAD3
+
+
+async def qr31(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global ORD3
+    await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        f'{str(ORD3)}.png', 'rb'), filename=f'./{str(ORD3)}.png')
     return CHOOSING
 
 
@@ -237,7 +245,16 @@ async def qr4(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD4
     name_file = f'./{ORD4}.png'
     await creat_qr(ORD4, name_file)
-    # await update.message.photo(name_file)
+    query = update.callback_query
+    text = " <b>подтвердите номер заказа</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+    return LOAD4
+
+
+async def qr41(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global ORD4
+    await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        f'{str(ORD4)}.png', 'rb'), filename=f'./{str(ORD4)}.png')
     return CHOOSING
 
 
@@ -245,7 +262,16 @@ async def qr5(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD5
     name_file = f'./{ORD5}.png'
     await creat_qr(ORD5, name_file)
-    # await update.message.photo(name_file)
+    query = update.callback_query
+    text = " <b>подтвердите номер заказа</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+    return LOAD5
+
+
+async def qr51(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global ORD5
+    await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        f'{str(ORD5)}.png', 'rb'), filename=f'./{str(ORD5)}.png')
     return CHOOSING
 
 
@@ -253,7 +279,16 @@ async def qr6(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD6
     name_file = f'./{ORD6}.png'
     await creat_qr(ORD6, name_file)
-    # await update.message.photo(name_file)
+    query = update.callback_query
+    text = " <b>подтвердите номер заказа</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+    return LOAD6
+
+
+async def qr61(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global ORD6
+    await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        f'{str(ORD6)}.png', 'rb'), filename=f'./{str(ORD6)}.png')
     return CHOOSING
 
 
@@ -261,7 +296,16 @@ async def qr7(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD7
     name_file = f'./{ORD7}.png'
     await creat_qr(ORD7, name_file)
-    # await update.message.photo(name_file)
+    query = update.callback_query
+    text = " <b>подтвердите номер заказа</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+    return LOAD7
+
+
+async def qr71(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global ORD7
+    await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        f'{str(ORD7)}.png', 'rb'), filename=f'./{str(ORD7)}.png')
     return CHOOSING
 
 
@@ -269,7 +313,16 @@ async def qr8(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD8
     name_file = f'./{ORD8}.png'
     await creat_qr(ORD8, name_file)
-    # await update.message.photo(name_file)
+    query = update.callback_query
+    text = " <b>подтвердите номер заказа</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+    return LOAD8
+
+
+async def qr81(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global ORD8
+    await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        f'{str(ORD8)}.png', 'rb'), filename=f'./{str(ORD8)}.png')
     return CHOOSING
 
 
@@ -277,7 +330,16 @@ async def qr9(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD9
     name_file = f'./{ORD9}.png'
     await creat_qr(ORD9, name_file)
-    # await update.message.photo(name_file)
+    query = update.callback_query
+    text = " <b>подтвердите номер заказа</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+    return LOAD9
+
+
+async def qr91(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global ORD9
+    await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        f'{str(ORD9)}.png', 'rb'), filename=f'./{str(ORD9)}.png')
     return CHOOSING
 
 
@@ -285,7 +347,16 @@ async def qr10(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD10
     name_file = f'./{ORD10}.png'
     await creat_qr(ORD10, name_file)
-    # await update.message.photo(name_file)
+    query = update.callback_query
+    text = " <b>подтвердите номер заказа</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+    return LOAD10
+
+
+async def qr101(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    global ORD10
+    await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        f'{str(ORD10)}.png', 'rb'), filename=f'./{str(ORD10)}.png')
     return CHOOSING
 
 
@@ -441,9 +512,7 @@ async def received_information(update: Update, context: ContextTypes.DEFAULT_TYP
     del user_data["choice"]
 
     await update.message.reply_text(
-        "Neat! Just so you know, this is what you already told me:"
-        f"{facts_to_str(user_data)}You can tell me more, or change your opinion"
-        " on something.",
+        "Смотрите внимательнее",
         reply_markup=markup,
     )
     return CHOOSING
@@ -497,6 +566,15 @@ def main() -> None:
             COMMENT: [MessageHandler(filters.TEXT, comment)],
             END_DATE: [MessageHandler(filters.TEXT, enddate)],
             LOAD1: [MessageHandler(filters.TEXT, qr11)],
+            LOAD2: [MessageHandler(filters.TEXT, qr21)],
+            LOAD3: [MessageHandler(filters.TEXT, qr31)],
+            LOAD4: [MessageHandler(filters.TEXT, qr41)],
+            LOAD5: [MessageHandler(filters.TEXT, qr51)],
+            LOAD6: [MessageHandler(filters.TEXT, qr61)],
+            LOAD7: [MessageHandler(filters.TEXT, qr71)],
+            LOAD8: [MessageHandler(filters.TEXT, qr81)],
+            LOAD9: [MessageHandler(filters.TEXT, qr91)],
+            LOAD10: [MessageHandler(filters.TEXT, qr101)],
             SEL_QR: [
                 CallbackQueryHandler(qr1, pattern="^" + str(ORD1) + "$"),
                 CallbackQueryHandler(qr2, pattern="^" + str(ORD2) + "$"),
