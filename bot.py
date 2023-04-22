@@ -40,7 +40,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 OK_PD, NOT_PD, CHOOSING, TYPING_REPLY, TYPING_CHOICE, START_ROUTES, END_ROUTES, FIO, ADRESS, CHARACTERISTICS, \
-COMMENT, END_DATE, OK_DE, NOT_DE, DELIVERY, SEL_QR = range(16)
+COMMENT, END_DATE, OK_DE, NOT_DE, DELIVERY, SEL_QR, LOAD1 = range(17)
 
 ORD0, ORD1, ORD2, ORD3, ORD4, ORD5, ORD6, ORD7, ORD8, ORD9, ORD10 = range(11)
 
@@ -123,8 +123,8 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     context.user_data["choice"] = text
     if text == 'Help':
         await update.message.reply_text(chf.text_help, parse_mode="html")
-
         return TYPING_REPLY
+
     if text == 'CreateOrder':
         keyboard = [
             [
@@ -194,15 +194,27 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 
 async def qr1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD1
+    global ORD1, application
     name_file = f'./{ORD1}.png'
     await creat_qr(ORD1, name_file)
     user_data = context.user_data
     del user_data["choice"]
 
-    await update.message.reply_text(chf.text_help, parse_mode="html")
+    query = update.callback_query
 
-    return CHOOSING
+    text = " <b>подтвердите номер заказа</b>"
+    await query.edit_message_text(text=text, parse_mode="html")
+
+    return LOAD1
+
+
+async def qr11(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+
+     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
+        './1.png', 'rb'), filename='./1.png')
+
+     # await update.message.photo(photo=open('./1.png', 'rb'))
+     return CHOOSING
 
 
 async def qr2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -311,6 +323,7 @@ async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     text = " <b> Введите Ваш адрес и телефон для связис</b> "
     await query.reply_text(text=text, parse_mode="html")
+
 
     return ADRESS
 
@@ -453,6 +466,7 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 def main() -> None:
+    global application
     """Run the bot."""
     # Create the Application and pass it your bot's token.
     load_dotenv()
@@ -475,15 +489,14 @@ def main() -> None:
             ],
             CHOOSING: [MessageHandler(filters.Regex("^(Help|CreateOrder|MyOrders)$"), regular_choice),
                        MessageHandler(filters.Regex("^Contacts$"), custom_choice), ],
-            TYPING_CHOICE: [
-                MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), regular_choice)],
-            TYPING_REPLY: [
-                MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), received_information, )],
+            TYPING_CHOICE: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), regular_choice)],
+            TYPING_REPLY: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), received_information, )],
             FIO: [MessageHandler(filters.TEXT, fio)],
             ADRESS: [MessageHandler(filters.TEXT, adress)],
             CHARACTERISTICS: [MessageHandler(filters.TEXT, characteristics)],
             COMMENT: [MessageHandler(filters.TEXT, comment)],
             END_DATE: [MessageHandler(filters.TEXT, enddate)],
+            LOAD1: [MessageHandler(filters.TEXT, qr11)],
             SEL_QR: [
                 CallbackQueryHandler(qr1, pattern="^" + str(ORD1) + "$"),
                 CallbackQueryHandler(qr2, pattern="^" + str(ORD2) + "$"),
@@ -495,7 +508,7 @@ def main() -> None:
                 CallbackQueryHandler(qr8, pattern="^" + str(ORD8) + "$"),
                 CallbackQueryHandler(qr9, pattern="^" + str(ORD9) + "$"),
                 CallbackQueryHandler(qr10, pattern="^" + str(ORD10) + "$")
-            ],
+            ]
         },
         fallbacks=[MessageHandler(filters.Regex("^Done$"), done)],
     )
