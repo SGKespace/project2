@@ -58,9 +58,9 @@ CHAT_ID = ' '
 COUNT_MONTH = 1
 
 reply_keyboard = [
-    ["Help", "CreateOrder"],
-    ["MyOrders", "Contacts"],
-    ["Done"],
+    ["Помощь", "Рассчитать заказ"],
+    ["Мои Заказы", "Контакты"],
+    ["Выйти из бота"],
 ]
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True,
                              resize_keyboard=True, input_field_placeholder="Выберите категорию")
@@ -115,11 +115,11 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     """Запросите у пользователя информацию о выбранном предопределенном выборе."""
     text = update.message.text
     context.user_data["choice"] = text
-    if text == 'Help':
+    if text == 'Помощь':
         await update.message.reply_text(chf.text_help, parse_mode="html")
         return CHOOSING  # TYPING_REPLY
 
-    if text == 'CreateOrder':
+    if text == 'Рассчитать заказ':
         keyboard = [
             [
                 InlineKeyboardButton("Да", callback_data=str(OK_PD)),
@@ -132,7 +132,7 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
         return START_ROUTES
 
-    if text == 'MyOrders':
+    if text == 'Мои Заказы':
         CHAT_ID = update.message.chat.id
         ch_id = (str(CHAT_ID), )
         conn = await create_connection()
@@ -145,34 +145,34 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         for order in list_ord:
             if n == 1:
                 ORD11 = order[0]
-                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD1))
+                btn = InlineKeyboardButton('Ордер N' + str(order[0]) + '.  ' + order[10], callback_data=str(ORD1))
             if n == 2:
                 ORD21 = order[0]
-                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD2))
+                btn = InlineKeyboardButton('Ордер N' + str(order[0]) + '.  ' + order[10], callback_data=str(ORD2))
             if n == 3:
                 ORD31 = order[0]
-                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD3))
+                btn = InlineKeyboardButton('Ордер N' + str(order[0]) + '.  ' + order[10], callback_data=str(ORD3))
             if n == 4:
                 ORD41 = order[0]
-                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD4))
+                btn = InlineKeyboardButton('Ордер N' + str(order[0]) + '.  ' + order[10], callback_data=str(ORD4))
             if n == 5:
                 ORD51 = order[0]
-                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD5))
+                btn = InlineKeyboardButton('Ордер N' + str(order[0]) + '.  ' + order[10], callback_data=str(ORD5))
             if n == 6:
                 ORD61 = order[0]
-                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD6))
+                btn = InlineKeyboardButton('Ордер N' + str(order[0]) + '.  ' + order[10], callback_data=str(ORD6))
             if n == 7:
                 ORD71 = order[0]
-                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD7))
+                btn = InlineKeyboardButton('Ордер N' + str(order[0]) + '.  ' + order[10], callback_data=str(ORD7))
             if n == 8:
                 ORD81 = order[0]
-                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD8))
+                btn = InlineKeyboardButton('Ордер N' + str(order[0]) + '.  ' + order[10], callback_data=str(ORD8))
             if n == 9:
                 ORD91 = order[0]
-                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD9))
+                btn = InlineKeyboardButton('Ордер N' + str(order[0]) + '.  ' + order[10], callback_data=str(ORD9))
             if n == 10:
                 ORD101 = order[0]
-                btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD10))
+                btn = InlineKeyboardButton('Ордер N' + str(order[0]) + '.  ' + order[10], callback_data=str(ORD10))
 
             keyboard.insert(0, [btn])
             n = n + 1
@@ -566,10 +566,10 @@ def main() -> None:
                 CallbackQueryHandler(ok_delivery, pattern="^" + str(OK_DE) + "$"),
                 CallbackQueryHandler(not_delivery, pattern="^" + str(NOT_DE) + "$"),
             ],
-            CHOOSING: [MessageHandler(filters.Regex("^(Help|CreateOrder|MyOrders)$"), regular_choice),
-                       MessageHandler(filters.Regex("^Contacts$"), custom_choice), ],
-            TYPING_CHOICE: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), regular_choice)],
-            TYPING_REPLY: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Done$")), received_information, )],
+            CHOOSING: [MessageHandler(filters.Regex("^(Помощь|Рассчитать заказ|Мои Заказы)$"), regular_choice),
+                       MessageHandler(filters.Regex("^Контакты$"), custom_choice), ],
+            TYPING_CHOICE: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Выйти из бота$")), regular_choice)],
+            TYPING_REPLY: [MessageHandler(filters.TEXT & ~(filters.COMMAND | filters.Regex("^Выйти из бота$")), received_information, )],
             FIO: [MessageHandler(filters.TEXT, fio)],
             ADRESS: [MessageHandler(filters.TEXT, adress)],
             CHARACTERISTICS: [MessageHandler(filters.TEXT, characteristics)],
@@ -598,7 +598,7 @@ def main() -> None:
                 CallbackQueryHandler(qr10, pattern="^" + str(ORD10) + "$")
             ]
         },
-        fallbacks=[MessageHandler(filters.Regex("^Done$"), done)],
+        fallbacks=[MessageHandler(filters.Regex("^Выйти из бота$"), done)],
     )
 
     application.add_handler(conv_handler)
