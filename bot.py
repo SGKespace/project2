@@ -206,6 +206,7 @@ async def qr11(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD11
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
         f'{str(ORD11)}.png', 'rb'), filename=f'./{str(ORD11)}.png')
+    os.remove(f'./{str(ORD11)}.png')
     return CHOOSING
 
 
@@ -223,6 +224,7 @@ async def qr21(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD21
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
         f'{str(ORD21)}.png', 'rb'), filename=f'./{str(ORD21)}.png')
+    os.remove(f'./{str(ORD21)}.png')
     return CHOOSING
 
 
@@ -240,6 +242,7 @@ async def qr31(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD31
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
         f'{str(ORD31)}.png', 'rb'), filename=f'./{str(ORD31)}.png')
+    os.remove(f'./{str(ORD31)}.png')
     return CHOOSING
 
 
@@ -257,6 +260,7 @@ async def qr41(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD41
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
         f'{str(ORD41)}.png', 'rb'), filename=f'./{str(ORD41)}.png')
+    os.remove(f'./{str(ORD41)}.png')
     return CHOOSING
 
 
@@ -274,6 +278,7 @@ async def qr51(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD51
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
         f'{str(ORD51)}.png', 'rb'), filename=f'./{str(ORD51)}.png')
+    os.remove(f'./{str(ORD51)}.png')
     return CHOOSING
 
 
@@ -291,6 +296,7 @@ async def qr61(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD61
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
         f'{str(ORD61)}.png', 'rb'), filename=f'./{str(ORD61)}.png')
+    os.remove(f'./{str(ORD61)}.png')
     return CHOOSING
 
 
@@ -308,6 +314,7 @@ async def qr71(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD71
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
         f'{str(ORD71)}.png', 'rb'), filename=f'./{str(ORD71)}.png')
+    os.remove(f'./{str(ORD71)}.png')
     return CHOOSING
 
 
@@ -325,6 +332,7 @@ async def qr81(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD81
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
         f'{str(ORD81)}.png', 'rb'), filename=f'./{str(ORD81)}.png')
+    os.remove(f'./{str(ORD81)}.png')
     return CHOOSING
 
 
@@ -342,6 +350,7 @@ async def qr91(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD91
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
         f'{str(ORD91)}.png', 'rb'), filename=f'./{str(ORD91)}.png')
+    os.remove(f'./{str(ORD91)}.png')
     return CHOOSING
 
 
@@ -359,6 +368,7 @@ async def qr101(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global ORD101
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
         f'{str(ORD101)}.png', 'rb'), filename=f'./{str(ORD101)}.png')
+    os.remove(f'./{str(ORD101)}.png')
     return CHOOSING
 
 
