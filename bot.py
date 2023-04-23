@@ -71,7 +71,6 @@ async def add_months(sourcedate, months):
     year = sourcedate.year + month // 12
     month = month % 12 + 1
     day = min(sourcedate.day, calendar.monthrange(year, month)[1])
-
     return date(year, month, day)
 
 
@@ -103,14 +102,6 @@ async def creat_qr(text_qr, name_file):
     img.save(name_file)
 
 
-async def facts_to_str(user_data: Dict[str, str]) -> str:
-    """Helper function for formatting the gathered user info."""
-    """ Вспомогательная функция для форматирования собранной информации о пользователе """
-
-    facts = [f"{key} - {value}" for key, value in user_data.items()]
-    return "\n".join(facts).join(["\n", "\n"])
-
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Start the conversation and ask user for input."""
     await update.message.reply_text(chf.text_start, parse_mode="html", reply_markup=markup)
@@ -126,7 +117,7 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     context.user_data["choice"] = text
     if text == 'Help':
         await update.message.reply_text(chf.text_help, parse_mode="html")
-        return TYPING_REPLY
+        return CHOOSING  # TYPING_REPLY
 
     if text == 'CreateOrder':
         keyboard = [
@@ -187,7 +178,7 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             n = n + 1
 
         reply_markup = InlineKeyboardMarkup(keyboard)
-        text = "Выбор QR кодa для открытия ячейки"
+        text = "Сформировать QR код для доступпа к ячейке хранения на основании номера ордера"
         await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
         return SEL_QR
 
@@ -510,7 +501,7 @@ async def not_pd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
     text = "Без вашего согласия мы не можем оказать услугу\n <b>" \
-           "Попробуйте переосмыслить свою ппозицию</b>"
+           "Попробуйте переосмыслить свою позицию</b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return CHOOSING
 
@@ -534,7 +525,7 @@ async def received_information(update: Update, context: ContextTypes.DEFAULT_TYP
     del user_data["choice"]
 
     await update.message.reply_text(
-        "Смотрите внимательнее",
+        "Пожалуйста, внимательнее. Скорее всего неправомерный ввод или двойной клик на меню",
         reply_markup=markup,
     )
     return CHOOSING
