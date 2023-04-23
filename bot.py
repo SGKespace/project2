@@ -181,10 +181,10 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 ORD10 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD10))
 
-            keyboard.append(btn)
+            keyboard.insert(0, [btn])
             n = n + 1
-        keyboard_g.append(keyboard)
-        reply_markup = InlineKeyboardMarkup(keyboard_g)
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
         text = "Выбор QR кодa для открытия ячейки"
         await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
         return SEL_QR
@@ -536,10 +536,7 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if "choice" in user_data:
         del user_data["choice"]
 
-    await update.message.reply_text(
-        f"I learned these facts about you: {facts_to_str(user_data)}Until next time!",
-        reply_markup=ReplyKeyboardRemove(),
-    )
+    await update.message.reply_text("Работа бота завершена. Чтобы возобновить наберите /start", reply_markup=ReplyKeyboardRemove(),)
     user_data.clear()
     return ConversationHandler.END
 
