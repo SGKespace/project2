@@ -44,6 +44,7 @@ COMMENT, END_DATE, OK_DE, NOT_DE, DELIVERY, SEL_QR, LOAD1, LOAD2, LOAD3, LOAD4, 
 LOAD10 = range(26)
 
 ORD0, ORD1, ORD2, ORD3, ORD4, ORD5, ORD6, ORD7, ORD8, ORD9, ORD10 = range(11)
+ORD01, ORD11, ORD21, ORD31, ORD41, ORD51, ORD61, ORD71, ORD81, ORD91, ORD101 = range(11)
 
 DELIVERY_BY_COURIER = 0
 FINAL_DATE = (1, 1, 1)
@@ -117,7 +118,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global CHAT_ID, ORD1, ORD2, ORD3, ORD14, ORD5, ORD6, ORD7, ORD8, ORD9, ORD10
+    global CHAT_ID, ORD1, ORD2, ORD3, ORD4, ORD5, ORD6, ORD7, ORD8, ORD9, ORD10, \
+        ORD11, ORD21, ORD31, ORD41, ORD51, ORD61, ORD71, ORD81, ORD91, ORD101
     """Ask the user for info about the selected predefined choice."""
     """Запросите у пользователя информацию о выбранном предопределенном выборе."""
     text = update.message.text
@@ -147,38 +149,38 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         list_ord = await conn[0].fetchall()  # возвращается кортеж
         await close_connection(conn)
         keyboard = []
-        keyboard_g = []
+
         n = 1
         for order in list_ord:
             if n == 1:
-                ORD1 = order[0]
+                ORD11 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD1))
             if n == 2:
-                ORD2 = order[0]
+                ORD21 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD2))
             if n == 3:
-                ORD3 = order[0]
+                ORD31 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD3))
             if n == 4:
-                ORD4 = order[0]
+                ORD41 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD4))
             if n == 5:
-                ORD5 = order[0]
+                ORD51 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD5))
             if n == 6:
-                ORD6 = order[0]
+                ORD61 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD6))
             if n == 7:
-                ORD7 = order[0]
+                ORD71 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD7))
             if n == 8:
-                ORD8 = order[0]
+                ORD81 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD8))
             if n == 9:
-                ORD9 = order[0]
+                ORD91 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD9))
             if n == 10:
-                ORD10 = order[0]
+                ORD101 = order[0]
                 btn = InlineKeyboardButton(str(order[0]) + '  ' + order[10], callback_data=str(ORD10))
 
             keyboard.insert(0, [btn])
@@ -191,172 +193,172 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 
 async def qr1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD1
-    name_file = f'./{ORD1}.png'
-    await creat_qr(ORD1, name_file)
+    global ORD11
+    name_file = f'./{ORD11}.png'
+    await creat_qr(ORD11, name_file)
     query = update.callback_query
-    text = " <b>подтвердите номер заказа</b>"
+    text = " <b>Чтобы обойти защиту Телеграмм от спама Вы должны отправить номер заказа </b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return LOAD1
 
 
 async def qr11(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD1
+    global ORD11
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        f'{str(ORD1)}.png', 'rb'), filename=f'./{str(ORD1)}.png')
+        f'{str(ORD11)}.png', 'rb'), filename=f'./{str(ORD11)}.png')
     return CHOOSING
 
 
 async def qr2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD2
-    name_file = f'./{ORD2}.png'
-    await creat_qr(ORD2, name_file)
+    global ORD21
+    name_file = f'./{ORD21}.png'
+    await creat_qr(ORD21, name_file)
     query = update.callback_query
-    text = " <b>подтвердите номер заказа</b>"
+    text = " <b>Чтобы обойти защиту Телеграмм от спама Вы должны отправить номер заказа </b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return LOAD2
 
 
 async def qr21(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD2
+    global ORD21
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        f'{str(ORD2)}.png', 'rb'), filename=f'./{str(ORD2)}.png')
+        f'{str(ORD21)}.png', 'rb'), filename=f'./{str(ORD21)}.png')
     return CHOOSING
 
 
 async def qr3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD3
-    name_file = f'./{ORD3}.png'
-    await creat_qr(ORD3, name_file)
+    global ORD31
+    name_file = f'./{ORD31}.png'
+    await creat_qr(ORD31, name_file)
     query = update.callback_query
-    text = " <b>подтвердите номер заказа</b>"
+    text = " <b>Чтобы обойти защиту Телеграмм от спама Вы должны отправить номер заказа </b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return LOAD3
 
 
 async def qr31(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD3
+    global ORD31
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        f'{str(ORD3)}.png', 'rb'), filename=f'./{str(ORD3)}.png')
+        f'{str(ORD31)}.png', 'rb'), filename=f'./{str(ORD31)}.png')
     return CHOOSING
 
 
 async def qr4(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD4
-    name_file = f'./{ORD4}.png'
-    await creat_qr(ORD4, name_file)
+    global ORD41
+    name_file = f'./{ORD41}.png'
+    await creat_qr(ORD41, name_file)
     query = update.callback_query
-    text = " <b>подтвердите номер заказа</b>"
+    text = " <b>Чтобы обойти защиту Телеграмм от спама Вы должны отправить номер заказа </b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return LOAD4
 
 
 async def qr41(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD4
+    global ORD41
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        f'{str(ORD4)}.png', 'rb'), filename=f'./{str(ORD4)}.png')
+        f'{str(ORD41)}.png', 'rb'), filename=f'./{str(ORD41)}.png')
     return CHOOSING
 
 
 async def qr5(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD5
-    name_file = f'./{ORD5}.png'
-    await creat_qr(ORD5, name_file)
+    global ORD51
+    name_file = f'./{ORD51}.png'
+    await creat_qr(ORD51, name_file)
     query = update.callback_query
-    text = " <b>подтвердите номер заказа</b>"
+    text = " <b>Чтобы обойти защиту Телеграмм от спама Вы должны отправить номер заказа </b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return LOAD5
 
 
 async def qr51(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD5
+    global ORD51
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        f'{str(ORD5)}.png', 'rb'), filename=f'./{str(ORD5)}.png')
+        f'{str(ORD51)}.png', 'rb'), filename=f'./{str(ORD51)}.png')
     return CHOOSING
 
 
 async def qr6(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD6
-    name_file = f'./{ORD6}.png'
-    await creat_qr(ORD6, name_file)
+    global ORD61
+    name_file = f'./{ORD61}.png'
+    await creat_qr(ORD61, name_file)
     query = update.callback_query
-    text = " <b>подтвердите номер заказа</b>"
+    text = " <b>Чтобы обойти защиту Телеграмм от спама Вы должны отправить номер заказа </b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return LOAD6
 
 
 async def qr61(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD6
+    global ORD61
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        f'{str(ORD6)}.png', 'rb'), filename=f'./{str(ORD6)}.png')
+        f'{str(ORD61)}.png', 'rb'), filename=f'./{str(ORD61)}.png')
     return CHOOSING
 
 
 async def qr7(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD7
-    name_file = f'./{ORD7}.png'
-    await creat_qr(ORD7, name_file)
+    global ORD71
+    name_file = f'./{ORD71}.png'
+    await creat_qr(ORD71, name_file)
     query = update.callback_query
-    text = " <b>подтвердите номер заказа</b>"
+    text = " <b>Чтобы обойти защиту Телеграмм от спама Вы должны отправить номер заказа </b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return LOAD7
 
 
 async def qr71(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD7
+    global ORD71
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        f'{str(ORD7)}.png', 'rb'), filename=f'./{str(ORD7)}.png')
+        f'{str(ORD71)}.png', 'rb'), filename=f'./{str(ORD71)}.png')
     return CHOOSING
 
 
 async def qr8(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD8
-    name_file = f'./{ORD8}.png'
-    await creat_qr(ORD8, name_file)
+    global ORD81
+    name_file = f'./{ORD81}.png'
+    await creat_qr(ORD81, name_file)
     query = update.callback_query
-    text = " <b>подтвердите номер заказа</b>"
+    text = " <b>Чтобы обойти защиту Телеграмм от спама Вы должны отправить номер заказа </b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return LOAD8
 
 
 async def qr81(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD8
+    global ORD81
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        f'{str(ORD8)}.png', 'rb'), filename=f'./{str(ORD8)}.png')
+        f'{str(ORD81)}.png', 'rb'), filename=f'./{str(ORD81)}.png')
     return CHOOSING
 
 
 async def qr9(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD9
-    name_file = f'./{ORD9}.png'
-    await creat_qr(ORD9, name_file)
+    global ORD91
+    name_file = f'./{ORD91}.png'
+    await creat_qr(ORD91, name_file)
     query = update.callback_query
-    text = " <b>подтвердите номер заказа</b>"
+    text = " <b>Чтобы обойти защиту Телеграмм от спама Вы должны отправить номер заказа </b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return LOAD9
 
 
 async def qr91(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD9
+    global ORD91
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        f'{str(ORD9)}.png', 'rb'), filename=f'./{str(ORD9)}.png')
+        f'{str(ORD91)}.png', 'rb'), filename=f'./{str(ORD91)}.png')
     return CHOOSING
 
 
 async def qr10(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD10
-    name_file = f'./{ORD10}.png'
-    await creat_qr(ORD10, name_file)
+    global ORD101
+    name_file = f'./{ORD101}.png'
+    await creat_qr(ORD101, name_file)
     query = update.callback_query
-    text = " <b>подтвердите номер заказа</b>"
+    text = " <b>Чтобы обойти защиту Телеграмм от спама Вы должны отправить номер заказа </b>"
     await query.edit_message_text(text=text, parse_mode="html")
     return LOAD10
 
 
 async def qr101(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    global ORD10
+    global ORD101
     await context.bot.send_document(chat_id=update.message['chat']['id'], document=open(
-        f'{str(ORD10)}.png', 'rb'), filename=f'./{str(ORD10)}.png')
+        f'{str(ORD101)}.png', 'rb'), filename=f'./{str(ORD101)}.png')
     return CHOOSING
 
 
@@ -542,7 +544,7 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 def main() -> None:
-    global application
+
     """Run the bot."""
     # Create the Application and pass it your bot's token.
     load_dotenv()
