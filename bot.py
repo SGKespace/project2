@@ -399,7 +399,7 @@ async def fio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     query = update.message
 
-    text = " <b> Введите Ваш адрес и телефон для связис</b> "
+    text = " <b> Введите Ваш адрес и телефон для связи</b> "
     await query.reply_text(text=text, parse_mode="html")
 
 
@@ -424,11 +424,11 @@ async def characteristics(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     try:
         SPACE_FLOAT = int(text_characteristics.partition('/')[0].replace(' ', ''))  # объем хранимых вещей
     except:
-        SPACE_FLOAT = 0
+        SPACE_FLOAT = 1
     try:
         WEIGHT_FLOAT = int(text_characteristics.partition('/')[2].replace(' ', ''))  # вес хранимых вещей
     except:
-        WEIGHT_FLOAT = 0
+        WEIGHT_FLOAT = 1
 
     query = update.message
     text = " <b>  Введите комментарий - обычно список вещей, ключевое слово - чтобы понять что сдали и т.д.</b>"
@@ -441,14 +441,20 @@ async def comment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global TEXT_COMMENT
     TEXT_COMMENT = update.message.text
     query = update.message
-    text = " <b>  Введите количество месяцев хранения.</b>"
+    text = " <b>  Введите количество месяцев хранения (максимум 12).</b>"
     await query.reply_text(text=text, parse_mode="html")
     return END_DATE
 
 
 async def enddate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global FINAL_DATE, BEGIN_DATE
-    COUNT_MONTH = int(update.message.text.replace(' ', ''))
+    try:
+        COUNT_MONTH = int(update.message.text.replace(' ', ''))
+        if COUNT_MONTH > 12:
+            COUNT_MONTH = 12
+    except:
+        COUNT_MONTH = 12
+
     FINAL_DATE = await add_months(BEGIN_DATE, COUNT_MONTH)
 
     keyboard = [
