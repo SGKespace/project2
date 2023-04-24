@@ -179,6 +179,10 @@ async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
         reply_markup = InlineKeyboardMarkup(keyboard)
         text = "Сформировать QR код для доступпа к ячейке хранения на основании номера ордера"
+        if len(list_ord) == 0:
+            text = 'У вас нет текущих заказов'
+            await update.message.reply_text(text=text, parse_mode="html")
+            return CHOOSING
         await update.message.reply_text(text=text, parse_mode="html", reply_markup=reply_markup)
         return SEL_QR
 
@@ -473,7 +477,8 @@ async def ok_delivery(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
            f'ФИО: {TEXT_FIO} \n' \
            f'Адрес: {TEXT_ADRESS} \n' \
            f'Объем: {SPACE_FLOAT} м.кв. \n' \
-           f'Срок хранения {COUNT_MONTH} мес. \n'  \
+           f'Срок хранения {COUNT_MONTH} мес. \n' \
+           'Доставка Заказчиком самостоятельно \n' \
            f'Расчетная стоимость: {price_float} рублей \n\n' \
            '<b> С Вами в ближайшее время свяжется наш сотрудник для уточнения деталей </b>'
     await query.edit_message_text(text=text, parse_mode="html")
@@ -490,6 +495,18 @@ async def not_delivery(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         TEXT_FIO, CHAT_ID, COUNT_MONTH
     DELIVERY_BY_COURIER = 1
     price_float = SPACE_FLOAT * COUNT_MONTH * 2000
+    query = update.callback_query
+
+    text = 'Ваши данные обрабатываются: \n\n' \
+           f'ФИО: {TEXT_FIO} \n' \
+           f'Адрес: {TEXT_ADRESS} \n' \
+           f'Объем: {SPACE_FLOAT} м.кв. \n' \
+           f'Срок хранения {COUNT_MONTH} мес. \n' \
+           'Доставка бесплатно курьером \n' \
+           f'Расчетная стоимость: {price_float} рублей \n\n' \
+           '<b> С Вами в ближайшее время свяжется наш сотрудник для уточнения деталей </b>'
+    await query.edit_message_text(text=text, parse_mode="html")
+
     conn = await create_connection()
     await add_event('', CHAT_ID, TEXT_FIO, TEXT_ADRESS, '', '', BEGIN_DATE, FINAL_DATE, SPACE_FLOAT, WEIGHT_FLOAT,
                     TEXT_COMMENT, price_float, DELIVERY_BY_COURIER)
